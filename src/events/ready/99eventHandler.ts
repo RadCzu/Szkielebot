@@ -3,10 +3,12 @@ import ScheduledEventModel, { ScheduledEventDocument } from "../../models/Schedu
 import { DailyPingAss } from "../../utils/scheduledTasks/dailyPingAss";
 import { PingAmelka } from "../../utils/scheduledTasks/pingAmelka";
 import { ScheduledEventFunction } from "../../utils/scheduledTasks/Interfaces/ScheduledEventHelper";
+import { DailyAmelkaDrawingReminder } from "../../utils/scheduledTasks/dailyAmelkaRysuj";
 
 // Local registry
 const eventHandlers: Record<string, ScheduledEventFunction> = {
   pingAmelka: new PingAmelka(),
+  dailyAmelkaRysuj: new DailyAmelkaDrawingReminder(),
 };
 
 // Main async loop function
