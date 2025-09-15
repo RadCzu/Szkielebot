@@ -4,11 +4,13 @@ import { DailyPingAss } from "../../utils/scheduledTasks/dailyPingAss";
 import { PingAmelka } from "../../utils/scheduledTasks/pingAmelka";
 import { ScheduledEventFunction } from "../../utils/scheduledTasks/Interfaces/ScheduledEventHelper";
 import { DailyAmelkaDrawingReminder } from "../../utils/scheduledTasks/dailyAmelkaRysuj";
+import { BadToTheBone } from "../../utils/scheduledTasks/bad2thebone";
 
 // Local registry
 const eventHandlers: Record<string, ScheduledEventFunction> = {
   pingAmelka: new PingAmelka(),
   dailyAmelkaRysuj: new DailyAmelkaDrawingReminder(),
+  bad2thebone: new BadToTheBone(),
 };
 
 // Main async loop function

@@ -12,12 +12,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/voice": "^0.19.0",
     "cron": "^3.1.7",
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
     "math": "^0.0.3",
     "mongodb": "^6.3.0",
     "mongoose": "^7.4.4",
+    "path": "^0.12.7",
     "typescript": "^5.4.5",
     "util": "^0.12.5"
   },
