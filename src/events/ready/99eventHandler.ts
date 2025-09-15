@@ -38,7 +38,7 @@ export async function startScheduledEventsLoop(client: Client) {
           const [firstGuild] = client.guilds.cache.values();
           if (!firstGuild) continue;
 
-          const defaultChannelId = "1412540951422959638";
+          const defaultChannelId = "1415633788268052482";
           const newEvent = new ScheduledEventModel({
             guildId: firstGuild.id,
             channelId: defaultChannelId,
