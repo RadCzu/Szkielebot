@@ -1,11 +1,11 @@
 {
-  "name": "waldemae",
+  "name": "skielebot",
   "version": "0.1.0",
   "description": "",
   "main": "dist/src/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "npx tsc",
+    "build": "npx tsc && npx copyfiles -u 1 src/assets/**/* dist/src/",
     "start": "node ."
   },
   "keywords": [],
@@ -13,9 +13,11 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/voice": "^0.19.0",
+    "@snazzah/davey": "^0.1.6",
     "cron": "^3.1.7",
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
+    "fs": "^0.0.1-security",
     "math": "^0.0.3",
     "mongodb": "^6.3.0",
     "mongoose": "^7.4.4",

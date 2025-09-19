@@ -1,9 +1,16 @@
 import { Client, VoiceChannel } from "discord.js";
-import { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, NoSubscriberBehavior } from "@discordjs/voice";
+import {
+  joinVoiceChannel,
+  createAudioPlayer,
+  createAudioResource,
+  NoSubscriberBehavior,
+  AudioPlayerStatus,
+} from "@discordjs/voice";
 import { ScheduledEventFunction } from "./Interfaces/ScheduledEventHelper";
 import { ScheduledEventDocument } from "../../models/ScheduledEvent";
 import { TimerFilter } from "./filters/TimerFilter";
 import path = require("path");
+import fs = require("fs");
 
 export class BadToTheBone extends ScheduledEventFunction {
   constructor() {
@@ -13,37 +20,52 @@ export class BadToTheBone extends ScheduledEventFunction {
   }
 
   protected async executeInternal(client: Client, evt: ScheduledEventDocument): Promise<void> {
-    const channelId = evt.channelId; // put the voice channel ID in the event
+    const channelId = evt.channelId;
     const channel = await client.channels.fetch(channelId);
-    const audio = createAudioResource(path.join(__dirname, "bad-to-the-bone.mp3"));
 
     if (!channel || !channel.isVoiceBased()) return;
     const voiceChannel = channel as VoiceChannel;
 
-    // If no one is in the channel, skip
     if (voiceChannel.members.size === 0) return;
 
-    // Join the channel
     const connection = joinVoiceChannel({
       channelId: voiceChannel.id,
       guildId: voiceChannel.guild.id,
       adapterCreator: voiceChannel.guild.voiceAdapterCreator as any,
     });
 
-    // Create audio player
     const player = createAudioPlayer({
-      behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
+      behaviors: { noSubscriber: NoSubscriberBehavior.Play },
     });
 
-    player.play(audio);
     connection.subscribe(player);
 
-    // Leave when finished
-    player.on(AudioPlayerStatus.Idle, () => {
+    const filePath = path.resolve(__dirname, "../../assets/bad2theboneriff.mp3");
+    if (!fs.existsSync(filePath)) {
+      console.error("Could not find audio file:", filePath);
       connection.destroy();
+      return;
+    }
+
+    const resource = createAudioResource(filePath);
+
+    // Play after 1 second
+    setTimeout(() => {
+      player.play(resource);
+    }, 1000);
+
+    player.on("error", (err) => {
+      console.error("Audio player error:", err.message);
     });
 
-    console.log(`BAD TO THE BONE`);
+    // Leave after 5 seconds
+    setTimeout(() => {
+      connection.destroy();
+      console.log(`Left the voice channel ${voiceChannel.name} after 5 seconds`);
+    }, 5000);
+
+    evt.time = new Date();
+    await evt.save();
   }
 }
 

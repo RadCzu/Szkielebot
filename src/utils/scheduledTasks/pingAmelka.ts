@@ -11,7 +11,7 @@ import { TimerFilter } from "./filters/TimerFilter";
 
 export class PingAmelka extends ScheduledEventFunction {
   constructor() {
-    super("pingAmelka", [new TimerFilter(10)]);
+    super("pingAmelka", [new TimerFilter(30)]);
   }
 
   protected async executeInternal(client: Client, evt: ScheduledEventDocument) {
