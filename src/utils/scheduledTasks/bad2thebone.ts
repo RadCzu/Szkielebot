@@ -4,7 +4,8 @@ import {
   createAudioPlayer,
   createAudioResource,
   NoSubscriberBehavior,
-  AudioPlayerStatus,
+  VoiceConnectionStatus,
+  VoiceConnection,
 } from "@discordjs/voice";
 import { ScheduledEventFunction } from "./Interfaces/ScheduledEventHelper";
 import { ScheduledEventDocument } from "../../models/ScheduledEvent";
@@ -42,30 +43,30 @@ export class BadToTheBone extends ScheduledEventFunction {
 
     const filePath = path.resolve(__dirname, "../../assets/bad2theboneriff.mp3");
     if (!fs.existsSync(filePath)) {
-      console.error("Could not find audio file:", filePath);
-      connection.destroy();
+      console.error("❌ Could not find audio file:", filePath);
+      this.safeDestroy(connection);
       return;
     }
 
     const resource = createAudioResource(filePath);
 
     // Play after 1 second
-    setTimeout(() => {
-      player.play(resource);
-    }, 1000);
-
-    player.on("error", (err) => {
-      console.error("Audio player error:", err.message);
-    });
+    setTimeout(() => player.play(resource), 1000);
 
     // Leave after 5 seconds
-    setTimeout(() => {
-      connection.destroy();
-      console.log(`Left the voice channel ${voiceChannel.name} after 5 seconds`);
-    }, 5000);
+    setTimeout(() => this.safeDestroy(connection, voiceChannel.name), 5000);
 
     evt.time = new Date();
     await evt.save();
+  }
+
+  private safeDestroy(connection: VoiceConnection, channelName?: string) {
+    if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
+      connection.destroy();
+      if (channelName) {
+        console.log(`Left the voice channel ${channelName}`);
+      }
+    }
   }
 }
 

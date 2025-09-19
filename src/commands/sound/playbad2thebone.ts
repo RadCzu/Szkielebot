@@ -4,7 +4,8 @@ import {
   createAudioPlayer,
   createAudioResource,
   NoSubscriberBehavior,
-  AudioPlayerStatus,
+  VoiceConnection,
+  VoiceConnectionStatus,
 } from "@discordjs/voice";
 import { VoiceChannel } from "discord.js";
 import path = require("path");
@@ -23,6 +24,14 @@ const testSound: CommandTemplate = {
     },
   ],
   callback: async (client, interaction) => {
+    // helper function
+    const safeDestroy = (connection: VoiceConnection, channelName?: string) => {
+      if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
+        connection.destroy();
+        if (channelName) console.log(`Left the voice channel ${channelName}`);
+      }
+    };
+
     const channel = interaction.options.get("channel");
     const voiceChannel = channel?.channel as VoiceChannel;
 
@@ -44,24 +53,22 @@ const testSound: CommandTemplate = {
     connection.subscribe(player);
 
     const filePath = path.resolve(__dirname, "../../assets/bad2theboneriff.mp3");
-
     if (!fs.existsSync(filePath)) {
+      safeDestroy(connection);
       return interaction.reply("❌ Could not find the sound file.");
     }
 
     const resource = createAudioResource(filePath);
-    setTimeout(() => {
-      player.play(resource);
-    }, 1000);
-    
+
+    // Play after 1 second
+    setTimeout(() => player.play(resource), 1000);
+
     player.on("error", (err) => {
       console.error("Audio player error:", err.message);
     });
 
     // Leave after 5 seconds
-    setTimeout(() => {
-      connection.destroy();
-    }, 5000);
+    setTimeout(() => safeDestroy(connection, voiceChannel.name), 5000);
 
     await interaction.reply(`▶️ Playing test sound in **${voiceChannel.name}**`);
   },
